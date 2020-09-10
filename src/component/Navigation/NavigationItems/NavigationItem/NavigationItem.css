@@ -17,7 +17,7 @@
 .NavigationItem a:active {
 }
 .NavigationItem a.active {
-  columns: #40a4c8;
+  color: #40a4c8;
 }
 
 @media (min-width: 500px) {
@@ -42,7 +42,7 @@
   }
   .NavigationItem a.active {
     background-color: #8f5c2c;
-    border-bottom: 4px solid transparent;
+    border-bottom: 4px solid #40a4c8;
     color: white;
   }
 }
