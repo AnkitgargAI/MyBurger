@@ -19,12 +19,12 @@ class Layout extends Component {
     return (
       <Aux>
         <ToolBar drawerToggleClicked={this.SideDrawerModalHandler} />
-        {this.state.showSideDrawer ? (
+        {/* {this.state.showSideDrawer ? (
           <SideDrawer
             modalOpen={this.SideDrawerModalHandler}
             modalClosed={this.SideDrawerModalHandler}
           />
-        ) : null}
+        ) : null} */}
 
         {/* <div>ToolBar, SideDrawer, BackDrop</div> */}
         <main className="Content">{this.props.children}</main>
