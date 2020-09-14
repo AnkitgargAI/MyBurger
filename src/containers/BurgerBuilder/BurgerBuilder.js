@@ -3,7 +3,10 @@ import Aux from "../../hoc/Aux";
 import Burger from "../../component/Burger/Burger";
 import BuildControls from "../../component/BuildControls/BuildControls";
 import Modal from "../../component/UI/Modal/Modal";
-import OrderSummary from "../../component/OrderSummary/OrderSummery"
+import OrderSummary from "../../component/OrderSummary/OrderSummery";
+import axios from "../../axios";
+import Spinner from "../../component/UI/Spinner/Spinner";
+import WitErrorHandler from "../../component/WithErrorHandler/WithErrorHandler";
 const INTEGREIDENT_PRICES = {
   salad: 0.5,
   bacon: 1.3,
@@ -25,7 +28,8 @@ class BurgerBuilder extends Component {
     },
     totalPrice: 50,
     purchasable: false,
-    purchasing:false
+    purchasing: false,
+    loading: false,
   };
 
   addIntegredientHandler = (type) => {
@@ -69,16 +73,38 @@ class BurgerBuilder extends Component {
     });
   };
 
-  purchaseHandler = ()=>
-  {
+  purchaseHandler = () => {
     let oldPurchsingStatus = this.state.purchasing;
-    this.setState({purchasing:!oldPurchsingStatus})
+    this.setState({ purchasing: !oldPurchsingStatus });
   };
 
-  purchaseProceedHandler=()=>{
-    alert('yes, continue')
-  };
+  purchaseProceedHandler = () => {
+    // alert("yes, continue");
+    this.setState({ loading: true });
 
+    const order = {
+      ingredients: this.state.ingredients,
+      price: this.state.totalPrice,
+      address: {
+        name: "Ankit Garg",
+        address: "Maujpur, delhi",
+        zipcode: 111223,
+        mobile: "+91-9999336116",
+      },
+      email: "ankit@yopmail.com",
+    };
+    axios
+      .post("/orders.json", order)
+      .then((response) => {
+        console.log(response);
+        this.setState({ loading: false,purchasing:false });
+      })
+      .catch((error) => {
+        console.log(error);
+        this.setState({ loading: false,purchasing:false });
+      });
+
+  };
 
   render() {
     const disabledInfo = {
@@ -87,10 +113,21 @@ class BurgerBuilder extends Component {
     for (const key in disabledInfo) {
       disabledInfo[key] = disabledInfo[key] <= 0;
     }
+    let orderSummary = <OrderSummary
+                        total_price={this.state.totalPrice.toFixed(2)}
+                        proceed={this.purchaseProceedHandler}
+                        cancel={this.purchaseHandler}
+                        ingredients={this.state.ingredients}
+                        
+  />
+  if(this.state.loading === true)
+  {
+    orderSummary = <Spinner/>
+  }
     return (
       <Aux>
         <Modal show={this.state.purchasing} modalClosed={this.purchaseHandler}>
-          <OrderSummary total_price={this.state.totalPrice.toFixed(2)} proceed={this.purchaseProceedHandler}  cancel={this.purchaseHandler} ingredients={this.state.ingredients}/>
+        {orderSummary}
         </Modal>
         <Burger ingredients={this.state.ingredients} />
         <BuildControls
@@ -99,11 +136,11 @@ class BurgerBuilder extends Component {
           disabled={disabledInfo}
           price={this.state.totalPrice}
           purchasable={this.state.purchasable}
-          orderedSummary = {this.purchaseHandler}
+          orderedSummary={this.purchaseHandler}
         />
       </Aux>
     );
   }
 }
 
-export default BurgerBuilder;
+export default WitErrorHandler(BurgerBuilder, axios);
