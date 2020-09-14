@@ -20,12 +20,7 @@ class BurgerBuilder extends Component {
   // }
 
   state = {
-    ingredients: {
-      salad: 0,
-      bacon: 0,
-      meat: 0,
-      cheese: 0,
-    },
+    ingredients: null,
     totalPrice: 50,
     purchasable: false,
     purchasing: false,
@@ -110,9 +105,13 @@ class BurgerBuilder extends Component {
     const disabledInfo = {
       ...this.state.ingredients,
     };
-    for (const key in disabledInfo) {
-      disabledInfo[key] = disabledInfo[key] <= 0;
+    if(this.state.ingredients)
+    {
+      for (const key in disabledInfo) {
+        disabledInfo[key] = disabledInfo[key] <= 0;
+      }
     }
+    
     let orderSummary = <OrderSummary
                         total_price={this.state.totalPrice.toFixed(2)}
                         proceed={this.purchaseProceedHandler}
@@ -124,22 +123,35 @@ class BurgerBuilder extends Component {
   {
     orderSummary = <Spinner/>
   }
+
+  // let burger = 
     return (
-      <Aux>
-        <Modal show={this.state.purchasing} modalClosed={this.purchaseHandler}>
-        {orderSummary}
-        </Modal>
-        <Burger ingredients={this.state.ingredients} />
-        <BuildControls
-          integredientAdded={this.addIntegredientHandler}
-          integredientRemove={this.removeIntegredientHandler}
-          disabled={disabledInfo}
-          price={this.state.totalPrice}
-          purchasable={this.state.purchasable}
-          orderedSummary={this.purchaseHandler}
-        />
-      </Aux>
+            <Aux>
+                <Modal show={this.state.purchasing} modalClosed={this.purchaseHandler}>
+                {this.state.ingredients !== null ? orderSummary :''}
+                </Modal>
+                {this.state.ingredients !== null ?
+                <Aux>
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls
+                  integredientAdded={this.addIntegredientHandler}
+                  integredientRemove={this.removeIntegredientHandler}
+                  disabled={disabledInfo}
+                  ingredients={this.state.ingredients}
+                  price={this.state.totalPrice}
+                  purchasable={this.state.purchasable}
+                  orderedSummary={this.purchaseHandler}
+                />
+                </Aux>:''}
+              </Aux>
     );
+  }
+
+  componentDidMount()
+  {
+    axios.get("https://react-my-burger-e703c.firebaseio.com/ingredients.json").then(response=>{
+      this.setState({ingredients:response.data});
+    });
   }
 }
 
