@@ -3,13 +3,60 @@ import Button from "../../../component/UI/Button/Butoon";
 import "./ContactData.css";
 import axios from "../../../axios";
 import Spinner from "../../../component/UI/Spinner/Spinner";
+import Input from "../../../component/UI/Input/Input";
 class ContactData extends Component {
   state = {
-    name: "",
-    email: "",
-    address: {
-      street: "",
-      postalCode: "",
+    orderForm: {
+      name: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your Name",
+        },
+        value: "",
+      },
+      email: {
+        elementType: "input",
+        elementConfig: {
+          type: "email",
+          placeholder: "Your Email",
+        },
+        value: "",
+      },
+      street: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your Street",
+        },
+        value: "",
+      },
+      postalCode: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your ZIP CODE",
+        },
+        value: "",
+      },
+      country: {
+        elementType: "input",
+        elementConfig: {
+          type: "text",
+          placeholder: "Your Country",
+        },
+        value: "",
+      },
+      deliveryMethod: {
+        elementType: "select",
+        elementConfig: {
+          options: [
+            { value: "fastest", displayValue: "Fastest" },
+            { value: "cheapest", displayValue: "Cheapest" },
+          ],
+        },
+        value: "",
+      },
     },
     loading: false,
   };
@@ -22,13 +69,6 @@ class ContactData extends Component {
     const order = {
       ingredients: this.props.ingredients,
       price: this.props.totalPrice,
-      address: {
-        name: "Ankit Garg",
-        address: "Maujpur, delhi",
-        zipcode: 111223,
-        mobile: "+91-9999336116",
-      },
-      email: "ankit@yopmail.com",
     };
     axios
       .post("/orders.json", order)
@@ -43,34 +83,58 @@ class ContactData extends Component {
       });
   };
   render() {
+    const formElementsArray = [];
+
+    for (let key in this.state.orderForm) {
+      formElementsArray.push({
+        id: key,
+        config: this.state.orderForm[key],
+      });
+    }
     let form = (
       <form>
-        <input
-          className="Input"
+        {formElementsArray.map((form) => {
+          return (
+            <Input
+              key={form.id}
+              elementType="..."
+              elementConfig="..."
+              inputType="input"
+              type="text"
+              name="name"
+              placeholder="Your name"
+            />
+          );
+        })}
+
+        <Input
+          elementType="..."
+          elementConfig="..."
+          inputType="input"
           type="text"
           name="name"
           placeholder="Your name"
         />
-        <input
-          className="Input"
+        {/* <Input
+          inputType="input"
           type="email"
           name="email"
           placeholder="Your email"
         />
-        <input
-          className="Input"
+        <Input
+          inputType="input"
           type="text"
           name="address"
           placeholder="Your Address"
         />
-        <input
-          className="Input"
+        <Input
+          inputType="input"
           type="number"
           name="postalCode"
           placeholder="Your postal code"
-        />
+        /> */}
         <Button btnType="Success" clicked={this.orderHandler}>
-          Submit
+          Place Order
         </Button>
       </form>
     );
